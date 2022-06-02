@@ -21,6 +21,13 @@
 ### Getting Imputed Matrices 
 
  - **Input :** input BAM file (can be a BAM file with one chromosome, after splitting), Bin Size, Chromosome, Output Directory
- - **Output :** text files containing original extracted matrices for each available bin & text files each containing matrices after imputing process for CpG densities 2,3,4 & 5 for each available bin.
-
+ - **Outputs :** 
+   - Text files containing original extracted matrices for each available bin & text files each containing matrices after imputing process for CpG densities 2,3,4 & 5 for each available bin.
+   - `.npy` files containing python dictionary of original extracted matrices for each available bin & `.npy` files each containing python dictionaries of matrices after imputing process for CpG densities 2,3,4 & 5 for each available bin. `.npy` files will be useful if you intend to use the matrices for downstream analyses. Following code snippet can be used to retrieve dictionaries from the `.npy` files.
+ ```python
+import numpy as np
+data = np.load('path/your_file.npy')
+dictionary_of_matrices = data[()]
+```
+   
 **NOTE: Available bin --> Any bun with atleast one read.**
