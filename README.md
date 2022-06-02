@@ -20,6 +20,31 @@
 
 ### Getting Imputed Matrices 
 
+Note: For PReLIM, input BAM file needs to be sorted first.
+
+
+```shell
+samtools sort <INPUT_FILE_PATH> > <SORTED_FILE_PATH>
+```
+
+Note: The BAM file should be cooridinate sorted and have an index file (.bai) present in its directory.
+
+```shell
+samtools <SORTED_FILE_PATH>
+```
+
+**Running the script to get imputed matrices**
+
+```shell
+python get_PReLIM_imputed_matrices.py <bin_size> <sorted_input_bam_file> -chr <chromosome> -o <output_directory>
+```
+
+Sample script : 
+
+```shell
+python get_PReLIM_imputed_matrices.py 200 sorted_input_bam_file.bam -chr chr19 -o Output
+```
+
  - **Inputs :** input BAM file (can be a BAM file with one chromosome, after splitting), Bin Size, Chromosome, Output Directory
  - **Outputs :** 
    - Text files containing original extracted matrices for each available bin & text files each containing matrices after imputing process for CpG densities 2,3,4 & 5 for each available bin.
