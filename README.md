@@ -30,4 +30,4 @@ data = np.load('path/your_file.npy')
 dictionary_of_matrices = data[()]
 ```
    
-**NOTE: Available bin --> Any bun with atleast one read.**
+**NOTE: Available bin --> Any bin with atleast one read.**
