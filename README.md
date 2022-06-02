@@ -20,6 +20,8 @@
 
 ### Getting Imputed Matrices 
 
+![PReLIM_Imputation Diagram](./PReLIM_Imputation.svg)
+
 Note: For PReLIM, input BAM file needs to be sorted first.
 
 
