@@ -11,7 +11,6 @@ from clubcpg_prelim import PReLIM
 import argparse
 
 
-
 def create_dictionary(bins, matrices):
     output = dict()
     for b, m in zip(bins, matrices):
@@ -152,6 +151,9 @@ def postprocess_predictions(predicted_matrix):
 def write_imputed_matrices(cpg_density, matrix_list, bin_list):
     output_imputed_file = "./%s/PReLIM.Sample.%s.%s_IMPUTED_CPG%s.txt" % (
         output_directory, input_bam.split("/")[-1], individual_chrom, cpg_density)
+    output_imputed_file_npy = "./%s/PReLIM.Sample.%s.%s_IMPUTED_CPG%s.npy" % (
+        output_directory, input_bam.split("/")[-1], individual_chrom, cpg_density)
+    np.save(output_imputed_file_npy, dict(zip(bin_list, matrix_list)))
     with open(output_imputed_file, 'w+') as f:
         f.write("IMPUTED MATRIX COUNT : %s \n" % (len(matrix_list)))
         for b, m in zip(bin_list, matrix_list):
@@ -162,8 +164,9 @@ def write_imputed_matrices(cpg_density, matrix_list, bin_list):
             f.write("\n")
 
 
-def write_initial_matrices(output_file, initial_matrices):
+def write_initial_matrices(output_file, initial_matrices, output_file_npy):
     with open(output_file, 'w+') as f:
+        temp_dict = {}
         bin_count = 0
         for r in initial_matrices:
             if r:
@@ -173,6 +176,8 @@ def write_initial_matrices(output_file, initial_matrices):
                 f.write(df_string)
                 f.write("\n")
                 bin_count += 1
+                temp_dict[r[0]] = r[1].to_numpy(dtype=float)
+        np.save(output_file_npy, temp_dict)
         f.write("BIN COUNT : %s ...\n" % (bin_count))
 
 
@@ -206,7 +211,8 @@ def get_PReLIM_imputed_matrices(bin_size, input_bam, output_directory, individua
 
     # Write pre-imputed matrices to output file
     output_file = "./%s/PReLIM.Sample.%s.%s.txt" % (output_directory, input_bam.split("/")[-1], individual_chrom)
-    write_initial_matrices(output_file, final_results)
+    output_file_npy = "./%s/PReLIM.Sample.%s.%s.npy" % (output_directory, input_bam.split("/")[-1], individual_chrom)
+    write_initial_matrices(output_file, final_results, output_file_npy)
 
     bins = []
     matrices = []
@@ -254,12 +260,12 @@ def get_PReLIM_imputed_matrices(bin_size, input_bam, output_directory, individua
         model = PReLIM(cpgDensity=i)
 
         # Step 3: Train the model and save it if you wish
-        model.train(matrices[i-2], model_file="model_file_cpg%s" % i)
+        model.train(matrices[i - 2], model_file="model_file_cpg%s" % i)
 
         print("TRAINING COMPLETED FOR CPG DENSITY %s ..." % i)
 
         # ... use batch imputation to impute many bins at once (recommended)
-        imputed_bins = model.impute_many(matrices[i-2])
+        imputed_bins = model.impute_many(matrices[i - 2])
 
         imputed_matrix_list = []
         for matrix in imputed_bins:
@@ -267,7 +273,7 @@ def get_PReLIM_imputed_matrices(bin_size, input_bam, output_directory, individua
             imputed_matrix_list.append(imputed_matrix)
 
         print("IMPUTING COMPLETED FOR CPG DENSITY %s ..." % i)
-        write_imputed_matrices(i, imputed_matrix_list, bins[i-2])
+        write_imputed_matrices(i, imputed_matrix_list, bins[i - 2])
 
 
 # Script begins
@@ -275,10 +281,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("bin_size", help="Size of bins to group the data into", default=100)
     parser.add_argument("input_bam_file",
-                            help="Input bam file, coordinate sorted with index present", default=None)
+                        help="Input bam file, coordinate sorted with index present", default=None)
     parser.add_argument("-chr", "--chromosome", help="Optional, perform only on one chromosome. ")
     parser.add_argument("-o", "--output", help="folder to save imputed coverage data", default=None)
-    
+
     args = parser.parse_args()
 
     # Set output dir
@@ -291,7 +297,6 @@ if __name__ == "__main__":
         os.mkdir(output_folder)
     except FileExistsError:
         print("Output folder already exists... no need to create it...")
-
 
     bin_size = int(args.bin_size)
     input_bam = args.input_bam_file

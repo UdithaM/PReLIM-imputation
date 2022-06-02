@@ -1,5 +1,5 @@
 # PReLIM-imputation
-##Get PReLIM imputed matrices (Reads x CpGs) for each bin given the bin size, chromosome &amp; input BAM file.
+### Get PReLIM imputed matrices (Reads x CpGs) for each bin given the bin size, chromosome &amp; input BAM file.
 
 ### Notes on prerequisites when installing/ running CluBCPG/ PReLIM
 
